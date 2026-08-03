@@ -1,17 +1,34 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -O2
 
-# 1. Match any target ending in .cpp
-%.cpp:
-	@# Calculate the absolute path of the source file
-	$(eval ABS_SRC := $(abspath $(PWD)/$@))
-	@# Extract just the binary name (e.g., pattern1)
-	$(eval BIN_NAME := $(notdir $(basename $@)))
-	@# Ensure a bin/ directory exists in your current terminal location
-	@mkdir -p ./bin
-	@# Compile using the absolute source path, putting the binary inside ./bin/
-	$(CXX) $(CXXFLAGS) $(ABS_SRC) -o ./bin/$(BIN_NAME)
-	@# Immediately run the binary from the bin folder
-	@./bin/$(BIN_NAME)
+# 1. Kill all built-in implicit rules and default suffixes completely
+.SUFFIXES:
+% : %,v
+% : %,t
+% : RCS/%,v
+% : RCS/%
+% : s.%
+% : SCCS/s.%
 
-.PHONY: %.cpp
+# 2. Automatically find all .cpp files across the directory structure
+SRC_FILES := $(shell find . -name "*.cpp")
+
+# 3. Explicitly catch targets ending in .cpp
+%.cpp:
+	$(eval BASE_NAME := $(basename $@))
+	$(eval SRC_PATH := $(filter %/$(BASE_NAME).cpp, $(SRC_FILES)))
+	@if [ -z "$(SRC_PATH)" ]; then echo "Error: $(BASE_NAME).cpp not found."; exit 1; fi
+	@mkdir -p ./bin
+	$(CXX) $(CXXFLAGS) $(SRC_PATH) -o ./bin/$(BASE_NAME)
+	@./bin/$(BASE_NAME)
+
+# 4. Explicitly catch targets WITHOUT an extension
+%:
+	$(eval BASE_NAME := $@)
+	$(eval SRC_PATH := $(filter %/$(BASE_NAME).cpp, $(SRC_FILES)))
+	@if [ -z "$(SRC_PATH)" ]; then echo "Error: $(BASE_NAME).cpp not found."; exit 1; fi
+	@mkdir -p ./bin
+	$(CXX) $(CXXFLAGS) $(SRC_PATH) -o ./bin/$(BASE_NAME)
+	@./bin/$(BASE_NAME)
+
+.PHONY: %.cpp %
