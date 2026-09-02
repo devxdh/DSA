@@ -1,0 +1,16 @@
+def twoSum(numbers: list[int], target: int) -> list[int]:
+    if not numbers:
+        return []
+
+    l, r = 0, len(numbers) - 1
+    while l < r:
+        sumVal = numbers[l] + numbers[r]
+        if sumVal == target:
+            return [l + 1, r + 1]
+        elif sumVal > target:
+            r -= 1
+        else:
+            l += 1
+
+
+print(twoSum([-1, 0], -1))
