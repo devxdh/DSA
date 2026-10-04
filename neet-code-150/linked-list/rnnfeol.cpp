@@ -11,24 +11,23 @@ struct ListNode {
 class Solution {
   public:
     ListNode *removeNthFromEnd(ListNode *head, int n) {
-        std::vector<ListNode *> listVec;
+        std::vector<ListNode *> vec;
 
         ListNode *curr = head;
         while (curr != nullptr) {
-            listVec.push_back(curr);
+            vec.push_back(curr);
             curr = curr->next;
         }
 
-        ListNode *target = listVec[(listVec.size() - n)];
+        ListNode *target = vec[vec.size() - n];
         if (target == head) {
             head = head->next;
-            return head;
         } else if (target->next == nullptr) {
-            listVec[(listVec.size() - n - 1)]->next = nullptr;
-            return head;
+            vec[vec.size() - n - 1]->next = nullptr;
         } else {
-            listVec[(listVec.size() - n - 1)]->next = target->next;
-            return head;
+            vec[vec.size() - n - 1]->next = target->next;
         }
+
+        return head;
     }
 };
