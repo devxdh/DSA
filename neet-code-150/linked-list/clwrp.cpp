@@ -1,4 +1,3 @@
-#include <unordered_map>
 class Node {
   public:
     int val;
@@ -19,31 +18,30 @@ class Solution {
             return nullptr;
         }
 
-        std::unordered_map<Node *, Node *> record;
-        record[nullptr] = nullptr;
-
         Node *curr = head;
-        Node *new_head = nullptr;
-
         while (curr) {
-            Node *nn = new Node(curr->val);
-
-            if (!new_head) {
-                new_head = nn;
-            }
-
-            record[curr] = nn;
-            curr = curr->next;
+            Node *copy = new Node(curr->val);
+            copy->next = curr->next;
+            curr->next = copy;
+            curr = copy->next;
         }
 
-        Node *nc = new_head;
         curr = head;
-
         while (curr) {
-            nc->next = record[curr->next];
-            nc->random = record[curr->random];
+            if (curr->random) {
+                curr->next->random = curr->random->next;
+            }
+            curr = curr->next->next;
+        }
 
-            nc = nc->next;
+        curr = head;
+        Node *new_head = head->next;
+        while (curr) {
+            Node *copy = curr->next;
+            curr->next = copy->next;
+            if (copy->next) {
+                copy->next = copy->next->next;
+            }
             curr = curr->next;
         }
 
