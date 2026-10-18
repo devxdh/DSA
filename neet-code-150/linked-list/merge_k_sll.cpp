@@ -23,7 +23,7 @@ class Solution {
                 ListNode *l2 = i + 1 < lists.size() ? lists[i + 1] : nullptr;
                 temp.push_back(mergeLists(l1, l2));
             }
-            lists = move(temp);
+            lists = std::move(temp);
         }
 
         return lists[0];
